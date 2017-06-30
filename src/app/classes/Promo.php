@@ -5,49 +5,78 @@ namespace App\Classes;
 class Promo
 {
     /**
-     * Title
+     * Computes the promotion for each specific
+     * customer type and then returns the total value
+     * with the changes made during the promotion
      *
-     * @var String
+     * @param string $type Customer Type: unilever, apple, etc.
+     * @param array|object $items An Array of Objects
+     * @return float $total
      */
-    protected $title;
-
-    /**
-     * Promo Description
-     *
-     * @var String
-     */
-    protected $description;
-
-    /**
-     * Promo Values
-     *
-     * @var Array
-     */
-    protected $promoValues;
-
-    public function __construct($title, $description, $promoValues)
+    public static function checkPromotion($type, $items)
     {
-        $this->setTitle($title);
-        $this->setDescription($description);
-        $this->setPromoValues($promoValues);
+        // TODO: Make sure that the promotion is separate
+        // to make it more flexible and customizable
+        // between ad product
+        $total = 0;
+
+        switch($type) {
+            case 'unilever':
+
+                $classicCtr = 0;
+                foreach ($items as $item)
+                {
+                    $total += $item->getPrice();
+
+                    if ($item->getId() === 'classic') {
+                        $classicCtr++;
+
+                        if ($classicCtr % 3 == 0) {
+                            $total -= $item->getPrice();
+                            $classicCtr = 0; // set it back to start
+                        }
+                    }
+                }
+                break;
+            case 'apple';
+                foreach ($items as $item) {
+                    if ($item->getId() === 'standard') {
+                        $item->setPrice(299.99);
+                    }
+
+                    $total += $item->getPrice();
+                }
+
+                break;
+
+            case 'nike':
+
+                // count the premium first
+                $premiumCnt = 0;
+                foreach ($items as $item) {
+                    if ($item->getId() === 'premium') {
+                        $premiumCnt++;
+                    }
+                }
+
+                foreach ($items as $item) {
+                    if ($premiumCnt >= 4) {
+                        if ($item->getId() === 'premium') {
+                            $item->setPrice(379.99);
+                        }
+                    }
+
+                    $total += $item->getPrice();
+                }
+
+                break;
+            default:
+                foreach ($items as $item) {
+                    $total += $item->getPrice();
+                }
+                break;
+        }
+
+        return $total;
     }
-
-    // Getters/Setters
-
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    public function setDescription($description)
-    {
-        $this->description = $description;
-    }
-
-    public function setPromoValues($promoValues);
-    {
-        $this->promoValues = $promoValues;
-    }
-
-    public function getTitle()
 }

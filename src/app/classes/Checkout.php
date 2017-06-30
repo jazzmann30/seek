@@ -2,6 +2,10 @@
 
 namespace App\Classes;
 
+require __DIR__ . '/../../../vendor/autoload.php';
+
+use App\Classes\Promo;
+
 class Checkout
 {
 
@@ -41,8 +45,9 @@ class Checkout
             // for the meantime
 
             $this->customer = new Customer(uniqid());
+        } else {
+            $this->customer = $customer;
         }
-        $this->customer = $customer;
     }
 
     public function getCustomer()
@@ -90,11 +95,11 @@ class Checkout
     {
         $total = 0;
 
-        foreach($this->getItems() as $item)
-        {
-            $total += $item->getPrice();
-        }
+        $cust = $this->getCustomer();
+        $type = $cust->getType();
 
-        return $total;
+        $total = Promo::checkPromotion($type, $this->getItems());
+
+        return number_format($total, 2, '.', '');
     }
 }
