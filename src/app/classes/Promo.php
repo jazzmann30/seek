@@ -15,59 +15,22 @@ class Promo
      */
     public static function checkPromotion($type, $items)
     {
-        // TODO: Make sure that the promotion is separate
-        // to make it more flexible and customizable
-        // between ad product
         $total = 0;
 
         switch($type) {
             case 'unilever':
 
-                $classicCtr = 0;
-                foreach ($items as $item)
-                {
-                    $total += $item->getPrice();
-
-                    if ($item->getId() === 'classic') {
-                        $classicCtr++;
-
-                        if ($classicCtr % 3 == 0) {
-                            $total -= $item->getPrice();
-                            $classicCtr = 0; // set it back to start
-                        }
-                    }
-                }
+                $total = self::checkUnilever($items);
                 break;
             case 'apple';
-                foreach ($items as $item) {
-                    if ($item->getId() === 'standard') {
-                        $item->setPrice(299.99);
-                    }
 
-                    $total += $item->getPrice();
-                }
+                $total = self::checkApple($items);
 
                 break;
 
             case 'nike':
 
-                // count the premium first
-                $premiumCnt = 0;
-                foreach ($items as $item) {
-                    if ($item->getId() === 'premium') {
-                        $premiumCnt++;
-                    }
-                }
-
-                foreach ($items as $item) {
-                    if ($premiumCnt >= 4) {
-                        if ($item->getId() === 'premium') {
-                            $item->setPrice(379.99);
-                        }
-                    }
-
-                    $total += $item->getPrice();
-                }
+                $total = self::checkNike($items);
 
                 break;
             default:
@@ -75,6 +38,85 @@ class Promo
                     $total += $item->getPrice();
                 }
                 break;
+        }
+
+        return $total;
+    }
+
+    /**
+     * Check Unilever Promotion
+     *
+     * @param array $items
+     * @return float $total
+     */
+    protected function checkUnilever($items)
+    {
+        $total = 0;
+
+        $classicCtr = 0;
+        foreach ($items as $item)
+        {
+            $total += $item->getPrice();
+
+            if ($item->getId() === 'classic') {
+                $classicCtr++;
+
+                if ($classicCtr % 3 == 0) {
+                    $total -= $item->getPrice();
+                    $classicCtr = 0; // set it back to start
+                }
+            }
+        }
+
+        return $total;
+    }
+
+    /**
+     * Check Apple Promotion
+     *
+     * @param array $items
+     * @return float $total
+     */
+    protected function checkApple($items)
+    {
+        $total = 0;
+        foreach ($items as $item) {
+            if ($item->getId() === 'standard') {
+                $item->setPrice(299.99);
+            }
+
+            $total += $item->getPrice();
+        }
+
+        return $total;
+    }
+
+    /**
+     * Check Nike Promotion
+     *
+     * @param array $items
+     * @return float $total
+     */
+    protected function checkNike($items)
+    {
+        $total = 0;
+
+        // count the premium first
+        $premiumCnt = 0;
+        foreach ($items as $item) {
+            if ($item->getId() === 'premium') {
+                $premiumCnt++;
+            }
+        }
+
+        foreach ($items as $item) {
+            if ($premiumCnt >= 4) {
+                if ($item->getId() === 'premium') {
+                    $item->setPrice(379.99);
+                }
+            }
+
+            $total += $item->getPrice();
         }
 
         return $total;

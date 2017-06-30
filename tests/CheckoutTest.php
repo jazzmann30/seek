@@ -126,4 +126,9 @@ class CheckoutTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(1519.96, $co->total());
     }
+
+    public function testFord()
+    {
+
+    }
 }
